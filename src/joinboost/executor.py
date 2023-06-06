@@ -1,16 +1,11 @@
-import re
 import time
 from abc import ABC, abstractmethod
-from enum import Enum
 from dataclasses import dataclass, field
 from typing import Optional, Any, List
-import types
-
-import pandas as pd
 
 from .aggregator import *
 from .mini_joingraph import MiniJoinGraph
-import numpy as np
+import cudf as pd
 
 ExecuteMode = Enum(
     "ExecuteMode", ["WRITE_TO_TABLE", "CREATE_VIEW", "EXECUTE", "NESTED_QUERY"]

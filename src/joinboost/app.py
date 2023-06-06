@@ -397,7 +397,7 @@ class DecisionTree(DummyModel):
         g, h = cur_semi_ring.get_value()
         const_ = float((g**2) / h)
 
-        # the next task is to compute the best split split among all the features
+        # the next task is to compute the best split among all the features
         # naively, we can iterate over all the features and compute the best split
         # alternatively, we batch the computation of the best split for all the features
         if not self.enable_batch_optimization:
