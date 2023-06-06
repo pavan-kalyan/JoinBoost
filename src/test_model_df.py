@@ -75,6 +75,7 @@ class TestExecutor(unittest.TestCase):
 
         dataset = JoinGraph(exe=exe)
         dataset.add_relation('lineorder', [], y='REVENUE', relation_address='../data/demo/lineorder.csv')
+        dataset.exe.table_registry['lineorder']['REVENUE'] = dataset.exe.table_registry['lineorder']['REVENUE'].astype(float)
         # Hack to make pandas work when join column doesn't match
         exe.rename_column('lineorder', 'ORDERDATE', 'DATEKEY')
         dataset.add_relation('customer', ['NAME', 'ADDRESS', 'CITY'], relation_address='../data/demo/customer.csv')
