@@ -864,9 +864,9 @@ class PandasExecutor(DuckdbExecutor):
             right_table = self.table_registry[right_table_name]
             
             # temp fix. TODO: remove
-            def remove_duplicate_col(df):
-                return df.loc[:, ~df.columns.duplicated()]
-            left_table, right_table = remove_duplicate_col(left_table), remove_duplicate_col(right_table)
+            # def remove_duplicate_col(df):
+            #     return df.loc[:, ~df.columns.duplicated()]
+            # left_table, right_table = remove_duplicate_col(left_table), remove_duplicate_col(right_table)
             
             key = tuple(sorted((left_table_name, right_table_name)))
             join_cond = join_conditions[key]
