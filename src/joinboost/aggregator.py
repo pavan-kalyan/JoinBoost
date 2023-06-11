@@ -92,7 +92,7 @@ def agg_to_np(agg_expr, df, qualified=False):
     para = agg_expr.para
 
     if agg.value == Aggregator.IDENTITY.value or agg.value == Aggregator.IDENTITY_LAMBDA.value:
-        print(f"res = {value_to_sql(para, False)}")
+        # print(f"res = {value_to_sql(para, False)}")
         return df.eval(f"res = {value_to_sql(para, False)}")["res"] 
     elif agg.value == Aggregator.DISTINCT_IDENTITY.value:
         return np.unique(df.eval(f"res = {value_to_sql(para, False)}")["res"])
