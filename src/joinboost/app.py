@@ -457,7 +457,7 @@ class DecisionTree(DummyModel):
                             attr: AggExpression(Aggregator.IDENTITY, value_to_sql(attr,qualified=False)),
                             # the case expression is for window functions
                             "criteria": AggExpression(Aggregator.CASE,
-                                                      [(f"({g_col}/{h_col})*{g_col} + ({g}-{g_col})/({h}-{h_col})*({g}-{g_col})",
+                                                      [(f"({g_col}/{h_col})*{g_col} + ({g}-{g_col})/({float(h)}-{h_col})*({float(g)}-{g_col})",
                                                         [SelectionExpression(SELECTION.LESSER, (str(h_col),str(h)))])]),
                             g_col: AggExpression(Aggregator.IDENTITY, g_col),
                             h_col: AggExpression(Aggregator.IDENTITY, h_col),
@@ -485,10 +485,10 @@ class DecisionTree(DummyModel):
                         
         # with batch optimization, we compute the best split for all the features              
         else:
-            # TODO:  following currenly only work for Pandas, and split by numerical features            
+            # TODO:  following currently only work for Pandas, and split by numerical features
             absorptions = []
 
-            for relation in cjt.get_base_relations():
+            for relation in cjt.relations:
                 features = cjt.get_relation_features(relation)
                 absorption = cjt.absorption(relation, group_by=list(set(features)))
                 absorption = cjt.exe.melt(absorption, 
@@ -523,13 +523,14 @@ class DecisionTree(DummyModel):
             result = result.iloc[idx]
 
             max_row = result.nlargest(1, 'criteria')
-            # max_value = max_row["criteria"].iloc[-1]
+            max_criteria = max_row["criteria"].iloc[-1]
             max_s = max_row[g_col].iloc[-1]
             max_c = max_row[h_col].iloc[-1]
             max_index = max_row["value"].iloc[-1]
             relation = max_row["relation"].iloc[-1]
             feature = max_row["key"].iloc[-1]
 
+            best_criteria = max_criteria
             # relation name, split attribute, split value, left gradient, left hessian
             best_criteria_ann = (relation, feature, str(max_index), max_s, max_c)
 
@@ -567,6 +568,7 @@ class DecisionTree(DummyModel):
         ):
             # get the best split
             (criteria, cur_level, r_name, attr, cur_value, left_g, left_h, c_id,) = self.split_candidates.get()
+            # print("criteria: ", criteria, "cur_level: ", cur_level, "r_name: ", r_name, "attr: ", attr, "cur_value: ", cur_value, "left_g: ", left_g, "left_h: ", left_h, "c_id: ", c_id)
             # get the cjt of the best split to expand
             expanding_cjt = self.nodes[c_id]
 
