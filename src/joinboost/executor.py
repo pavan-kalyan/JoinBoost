@@ -621,6 +621,7 @@ class PandasExecutor(DuckdbExecutor):
 
     def __init__(self, conn, debug=False):
         super().__init__(conn)
+        print(f"Using pandas subtype = {pd.__name__}")
         self.debug = debug
 
     def add_table(self, table: str, table_address):

@@ -2,7 +2,7 @@ import math
 import time
 import unittest
 
-import pandas as pd
+import cudf as pd
 import duckdb
 import pytest
 from sklearn.metrics import mean_squared_error
