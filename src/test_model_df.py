@@ -2,7 +2,6 @@ import math
 import time
 import unittest
 
-import pandas as pd
 import duckdb
 import pytest
 from sklearn.metrics import mean_squared_error
@@ -80,7 +79,7 @@ class TestExecutor(unittest.TestCase):
         dataset.exe.table_registry['lineorder']['REVENUE'] = dataset.exe.table_registry['lineorder']['REVENUE'].astype(
             float)
         # Hack to make pandas work when join column doesn't match
-        exe.rename_column('lineorder', 'ORDERDATE', 'ORDERDATE')
+        exe.rename_column('lineorder', 'ORDERDATE', 'DATEKEY')
         dataset.add_relation('customer', ['NAME', 'ADDRESS', 'CITY'], relation_address='../data/demo/customer.csv')
         dataset.add_relation('part', ['NAME', 'MFGR', 'CATEGORY', 'BRAND1'], relation_address='../data/demo/part.csv')
         dataset.add_relation('date',
@@ -90,7 +89,7 @@ class TestExecutor(unittest.TestCase):
                              relation_address='../data/demo/supplier.csv')
         dataset.add_join("customer", "lineorder", ["CUSTKEY"], ["CUSTKEY"])
         dataset.add_join("part", "lineorder", ["PARTKEY"], ["PARTKEY"])
-        dataset.add_join("date", "lineorder", ["ORDERDATE"], ["ORDERDATE"])
+        dataset.add_join("date", "lineorder", ["DATEKEY"], ["DATEKEY"])
         dataset.add_join("supplier", "lineorder", ["SUPPKEY"], ["SUPPKEY"])
 
         depth = 3
