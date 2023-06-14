@@ -352,7 +352,7 @@ class JoinGraph:
         
         left_keys, right_keys = self.get_join_keys(table_name_left, table_name_right)
         
-        self.determine_multiplicity_and_missing(table_name_left, left_keys, table_name_right, right_keys)
+        # self.determine_multiplicity_and_missing(table_name_left, left_keys, table_name_right, right_keys)
     
     # this function is used to determine the multiplicity and missing keys of a join
     # for example relation with join key B
@@ -482,7 +482,7 @@ class JoinGraph:
         self.check_all_features_exist()
         self.check_acyclic()
         self.check_target_exist()
-        self.check_target_is_fact()
+        # self.check_target_is_fact()
     
     # Below maybe move to preprocess
     def check_target_is_fact(self):
