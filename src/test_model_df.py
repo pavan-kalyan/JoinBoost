@@ -59,7 +59,7 @@ class TestExecutor(unittest.TestCase):
 
         # self.assertTrue(abs(gb.compute_rmse('test')[0] - math.sqrt(mse)) < 1e-3)
 
-    def test_demo(self):
+    def test_demo_with_no_batch_opt(self):
         con = duckdb.connect(database=':memory:')
         con.execute("CREATE TABLE customer AS SELECT * FROM '../data/demo/customer.csv'")
         con.execute("CREATE TABLE lineorder AS SELECT * FROM '../data/demo/lineorder.csv'")
@@ -94,21 +94,32 @@ class TestExecutor(unittest.TestCase):
         dataset.add_join("supplier", "lineorder", ["SUPPKEY"], ["SUPPKEY"])
 
         depth = 3
-        gb = DecisionTree(learning_rate=1, max_leaves=2 ** depth, max_depth=depth, enable_batch_optimization=True)
+        gb = DecisionTree(learning_rate=1, max_leaves=2 ** depth, max_depth=depth, enable_batch_optimization=False)
 
         gb.fit(dataset)
         gb._build_model_legacy()
         self.assertFalse(len(gb.model_def) == 0)
-        for line in gb.model_def:
-            for subline in line:
-                print(subline)
+        expected_model_def = [
+            (1.3624749894084731, ['DAYNUMINWEEK > 19', 'DAYOFWEEK <= 971', 'BRAND1 > 4']),
+            (-10.975301807316953, ['DAYNUMINWEEK > 19', 'DAYOFWEEK > 971', 'BRAND1 > 4']),
+            (401.45106333333337, ['DAYNUMINWEEK > 19', 'YEARMONTHNUM <= 5', 'BRAND1 <= 4']),
+            (294.7331146153846, ['DAYNUMINWEEK <= 19', 'CATEGORY <= 70', 'CITY > 950']),
+            (15.78696076923076, ['DAYNUMINWEEK <= 19', 'CATEGORY <= 70', 'CITY <= 950']),
+            (-45.51432417607228, ['DAYNUMINWEEK > 19', 'YEARMONTHNUM > 5', 'BRAND1 <= 4']),
+            (70.1352738596491, ['DAYNUMINWEEK <= 19', 'CATEGORY > 70', 'ADDRESS <= 30']),
+            (-30.45753881720434, ['DAYNUMINWEEK <= 19', 'CATEGORY > 70', 'ADDRESS > 30']),
+        ]
+        for i in range(len(gb.model_def)):
+            for j in range(len(gb.model_def[i])):
+                print(gb.model_def[i][j])
+                self.assertTrue(abs(gb.model_def[i][j][0] - expected_model_def[j][0]) < 1e-3)
         # clf = DecisionTreeRegressor(max_depth=depth)
         # clf = clf.fit(join[x], join[y])
         # mse = mean_squared_error(join[y], clf.predict(join[x]))
 
         # self.assertTrue(abs(gb.compute_rmse('test')[0] - math.sqrt(mse)) < 1e-3)
 
-    def test_synthetic(self):
+    def test_synthetic_with_no_batch_opt(self):
         join = pd.read_csv("../data/synthetic/RST.csv")
         con = duckdb.connect(database=":memory:")
         con.execute("CREATE TABLE test AS SELECT * FROM '../data/synthetic/RST.csv'")
@@ -174,7 +185,7 @@ class TestExecutor(unittest.TestCase):
 
         depth = 3
         gb = DecisionTree(learning_rate=1, max_leaves=2 ** depth, max_depth=depth, partition_early=True,
-                          enable_batch_optimization=True)
+                          enable_batch_optimization=False)
 
         start_time = time.time()
         gb.fit(dataset)
@@ -196,8 +207,8 @@ class TestExecutor(unittest.TestCase):
         ]
         for i in range(len(gb.model_def)):
             for j in range(len(gb.model_def[i])):
-                self.assertTrue(abs(gb.model_def[i][j][0] - expected_model_def[j][0]) < 1e-3)
                 print(gb.model_def[i][j])
+                self.assertTrue(abs(gb.model_def[i][j][0] - expected_model_def[j][0]) < 1e-3)
 
 #         self.assertTrue(abs(gb.compute_rmse("test")[0] - math.sqrt(mse)) < 1e-3)
 

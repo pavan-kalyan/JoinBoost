@@ -583,7 +583,7 @@ class DecisionTree(DummyModel):
                 features = cjt.get_relation_features(relation)
                 absorption = cjt.absorption(relation, group_by=list(set(features)))
                 absorption = cjt.exe.melt(absorption, 
-                                          id_vars= self.semi_ring.get_columns_name(), 
+                                          id_vars=self.semi_ring.get_columns_name(),
                                           value_vars=features, 
                                           var_name='key',
                                           value_name='value')
